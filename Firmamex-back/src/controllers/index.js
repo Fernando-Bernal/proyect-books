@@ -11,7 +11,6 @@ const searchBooks = async (req, res) => {
   }
 };
 
-
 const generateStory = async (req, res) => {
     const { text1, text2 } = req.body;
     try {
