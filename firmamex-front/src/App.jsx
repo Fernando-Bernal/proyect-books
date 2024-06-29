@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import BookSearchForm from './components/BookSearchForm.jsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [books, setBooks] = useState({ book1: null, book2: null });
+
+  const handleSendBooks = (book1, book2) => {
+    setBooks({ book1, book2 });
+    // Aquí puedes manejar el envío a la API de generación de historias
+  };
 
   return (
-    <>
+    <div className="App">
+      <h1>Generador de Historias con Libros</h1>
+      <BookSearchForm onSendBooks={handleSendBooks} />
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {books.book1 && books.book2 && (
+          <div>
+            <h2>Libros Seleccionados</h2>
+            <p>{books.book1.volumeInfo.title}</p>
+            <p>{books.book2.volumeInfo.title}</p>
+            {/* Aquí puedes agregar el botón para generar la historia */}
+          </div>
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+export default App;
