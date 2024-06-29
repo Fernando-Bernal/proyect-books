@@ -3,7 +3,7 @@ import axios from "axios";
 const searchBooks = async (req, res) => {
   const { book } = req.query;
   try {
-    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${book}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${book}&maxResults=7&key=${process.env.APIKEY_BOOKS}`);
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching books:', error.message);

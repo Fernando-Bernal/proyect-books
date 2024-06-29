@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import styled from "styled-components";
 
 const BookSearchForm = ({ onSendBooks }) => {
     const [query1, setQuery1] = useState("");
@@ -9,7 +10,8 @@ const BookSearchForm = ({ onSendBooks }) => {
     const [selectedBook1, setSelectedBook1] = useState(null);
     const [selectedBook2, setSelectedBook2] = useState(null);
     const [generatedStory, setGeneratedStory] = useState("");
-   
+    const [loading, setLoading] = useState(false);
+
     const handleSearch1 = async () => {
         try {
             const response = await axios.get(
@@ -42,6 +44,7 @@ const BookSearchForm = ({ onSendBooks }) => {
 
     const handleSubmit = async () => {
         if (selectedBook1 && selectedBook2) {
+            setLoading(true);
             try {
                 const response = await axios.post(
                     "http://localhost:3000/generate-story",
@@ -54,6 +57,8 @@ const BookSearchForm = ({ onSendBooks }) => {
                 setGeneratedStory(storyText);
             } catch (error) {
                 console.error("Error generating story:", error);
+            } finally {
+                setLoading(false);
             }
         } else {
             alert("Por favor, selecciona dos libros.");
@@ -61,64 +66,213 @@ const BookSearchForm = ({ onSendBooks }) => {
     };
 
     return (
-        <div>
-            <div>
-                <h3>Buscar Libro 1</h3>
-                <input
-                    type="text"
-                    value={query1}
-                    onChange={(e) => setQuery1(e.target.value)}
-                    placeholder="Buscar libro 1..."
-                />
-                <button onClick={handleSearch1}>Buscar</button>
-                <ul>
-                    {results1.map((book) => (
-                        <li
-                            key={book.id}
-                            onClick={() => handleSelectBook1(book)}
-                        >
-                            {book.volumeInfo.title}
-                        </li>
-                    ))}
-                </ul>
-                {selectedBook1 && (
-                    <p>Seleccionado: {selectedBook1.volumeInfo.title}</p>
-                )}
-            </div>
+        <Conteiner>
+            <DivInputs>
+                <ColumnInput>
+                    {results1.length === 0 ? (
+                        <H3>Buscar Libro 1</H3>
+                    ) : (
+                        <H3>Elija un Libro</H3>
+                    )}
+                    <ContenedorBuscador>
+                        <Input
+                            type="text"
+                            value={query1}
+                            onChange={(e) => setQuery1(e.target.value)}
+                            placeholder="Buscar..."
+                        />
+                        <ButtonInput onClick={handleSearch1}>
+                            Buscar
+                        </ButtonInput>
+                    </ContenedorBuscador>
+                    <DivUl>
+                        {results1.map((book) => (
+                            <ul
+                                key={book.id}
+                                onClick={() => handleSelectBook1(book)}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}>
+                                    <img
+                                        src={
+                                            book.volumeInfo.imageLinks
+                                                ?.thumbnail ||
+                                            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAOVBMVEWoqa3///+kpamhoqb6+vrAwcP39/etrrLz8/Tq6uvU1NXb29zd3t/Nzc/w8PHHx8i0tbi7vMDk5OWv5McUAAADZUlEQVR4nO2b25KqMBBFTQeIiHLx/z/2iFOUjKL0bcc5VVkvvO5Kdzp943AoFAqFQqFQKBQKhUKh4ANRjJFm5s+31dygmKaha5twp+q7S52+LIwOw/UYnmjay+FruihO52dBC9f6O7JobN9Jmmmn/KrieP0k6UdWzKuJLtWeppvbn3IeFqWPlnvQj9lk0fRy497R1JlUxZoraeaSxbHiRaIphFMGVSQ6p/tZwS0o14RXRUmuKQTwHUy9RtQxITXFTqPp9hQCnV3jUD8MQAOqjDfTwySRMEKtgUWr2OhFBZAmy0GF0IG8ipkabIMJCzRZNIEuYHybkPNoEa5OjFzzIwD7Wa0HsR+drKLOAKfarV72aP016fKDNY2/U41WP7+lVf6izJqCf82szloeuF8/fSr1wL1gpqGI+o9FeTi6f/3nIMq/2eERp7w1HdJfjOh/8u0jc5ZwddfkkE8B6hkyezqi02gqRW9UkGrGaD9I58VaOYD6xKYKGdR3sb3JqOlDZPf0X6lQrSDLUQHHNOqojuvkGVIF5PBPG6s67ChEFRaQxrujeGyqhJ6DTOJkr8LP/OSvTZ1ltiY7qyHLFJJGgV9VuUbuNLLz9ZyTbW7C3h6yLgHUDBNWyNnVFnF/otWkvBsclE6cDY5uzLeGE8eOGxXOY57ToiSa2XY57l8chK9fBd/hoFGREjfYw4qcDaUNgKsl7A2lV2CRPWpMt9Bg3kDbCBmz8SLdUHrFv8oi5ULJGu+Bn4cmb1VkHGovXB1V2VuLC34tRmu77Jcqp8jgMVV74BMZyGFQu8alCkyGOL5F4zB4IFNTcYvefFSeTr5gvoLmZZItjG5F5jHRFo1JE8J4M2dLtJL3fZgYDBjdb97CUX1UHhP2d6iTK++wuUY7JvXLDbZQ+johNSlX9LAHpTwqpEfNVIqHGX1QqnwvouLmA7EoZIxaEMcq/zTqFfHIBpKyPFPLNKHSg98ItwJiDk0hiJzKvr3MQ9Ro9yrT92glotDRfEFSbuWynsh+2r+b5Ajun3UrSQBflOp/OR1sp8rx7i2wmzC5AsIMf3sww2O80HOzYsng2gzXqbJFqRlmrWwdLchgJsXWn65kMMNnhLR/3tEwReFLhjXMQJVVE/P6OazDS2BdP99e/j6shyZvRNis/v4B6+Uvx4fhy+cAAAAASUVORK5CYII="
+                                        }
+                                        alt={book.volumeInfo.title}
+                                        style={{
+                                            width: "40px",
+                                            marginRight: "10px",
+                                        }}
+                                    />
+                                    <span>{book.volumeInfo.title}</span>
+                                </div>
+                            </ul>
+                        ))}
+                    </DivUl>
 
-            <div>
-                <h3>Buscar Libro 2</h3>
-                <input
-                    type="text"
-                    value={query2}
-                    onChange={(e) => setQuery2(e.target.value)}
-                    placeholder="Buscar libro 2..."
-                />
-                <button onClick={handleSearch2}>Buscar</button>
-                <ul>
-                    {results2.map((book) => (
-                        <li
-                            key={book.id}
-                            onClick={() => handleSelectBook2(book)}
-                        >
-                            {book.volumeInfo.title}
-                        </li>
-                    ))}
-                </ul>
-                {selectedBook2 && (
-                    <p>Seleccionado: {selectedBook2.volumeInfo.title}</p>
-                )}
-            </div>
+                    {selectedBook1 && (
+                        <Msj>
+                            Seleccionaste: {selectedBook1.volumeInfo.title}
+                        </Msj>
+                    )}
+                </ColumnInput>
 
-            <button onClick={handleSubmit}>Enviar Libros Seleccionados</button>
+                <ColumnInput>
+                    {results1.length === 0 ? (
+                        <H3>Buscar Libro 2</H3>
+                    ) : (
+                        <H3>Elija un Libro</H3>
+                    )}
+                    <ContenedorBuscador>
+                        <Input
+                            type="text"
+                            value={query2}
+                            onChange={(e) => setQuery2(e.target.value)}
+                            placeholder="Buscar..."
+                        />
+                        <ButtonInput onClick={handleSearch2}>
+                            Buscar
+                        </ButtonInput>
+                    </ContenedorBuscador>
+                    <DivUl>
+                        {results2.map((book) => (
+                            <ul
+                                key={book.id}
+                                onClick={() => handleSelectBook2(book)}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}>
+                                    <img
+                                        src={
+                                            book.volumeInfo.imageLinks
+                                                ?.thumbnail ||
+                                            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAOVBMVEWoqa3///+kpamhoqb6+vrAwcP39/etrrLz8/Tq6uvU1NXb29zd3t/Nzc/w8PHHx8i0tbi7vMDk5OWv5McUAAADZUlEQVR4nO2b25KqMBBFTQeIiHLx/z/2iFOUjKL0bcc5VVkvvO5Kdzp943AoFAqFQqFQKBQKhUKh4ANRjJFm5s+31dygmKaha5twp+q7S52+LIwOw/UYnmjay+FruihO52dBC9f6O7JobN9Jmmmn/KrieP0k6UdWzKuJLtWeppvbn3IeFqWPlnvQj9lk0fRy497R1JlUxZoraeaSxbHiRaIphFMGVSQ6p/tZwS0o14RXRUmuKQTwHUy9RtQxITXFTqPp9hQCnV3jUD8MQAOqjDfTwySRMEKtgUWr2OhFBZAmy0GF0IG8ipkabIMJCzRZNIEuYHybkPNoEa5OjFzzIwD7Wa0HsR+drKLOAKfarV72aP016fKDNY2/U41WP7+lVf6izJqCf82szloeuF8/fSr1wL1gpqGI+o9FeTi6f/3nIMq/2eERp7w1HdJfjOh/8u0jc5ZwddfkkE8B6hkyezqi02gqRW9UkGrGaD9I58VaOYD6xKYKGdR3sb3JqOlDZPf0X6lQrSDLUQHHNOqojuvkGVIF5PBPG6s67ChEFRaQxrujeGyqhJ6DTOJkr8LP/OSvTZ1ltiY7qyHLFJJGgV9VuUbuNLLz9ZyTbW7C3h6yLgHUDBNWyNnVFnF/otWkvBsclE6cDY5uzLeGE8eOGxXOY57ToiSa2XY57l8chK9fBd/hoFGREjfYw4qcDaUNgKsl7A2lV2CRPWpMt9Bg3kDbCBmz8SLdUHrFv8oi5ULJGu+Bn4cmb1VkHGovXB1V2VuLC34tRmu77Jcqp8jgMVV74BMZyGFQu8alCkyGOL5F4zB4IFNTcYvefFSeTr5gvoLmZZItjG5F5jHRFo1JE8J4M2dLtJL3fZgYDBjdb97CUX1UHhP2d6iTK++wuUY7JvXLDbZQ+johNSlX9LAHpTwqpEfNVIqHGX1QqnwvouLmA7EoZIxaEMcq/zTqFfHIBpKyPFPLNKHSg98ItwJiDk0hiJzKvr3MQ9Ro9yrT92glotDRfEFSbuWynsh+2r+b5Ajun3UrSQBflOp/OR1sp8rx7i2wmzC5AsIMf3sww2O80HOzYsng2gzXqbJFqRlmrWwdLchgJsXWn65kMMNnhLR/3tEwReFLhjXMQJVVE/P6OazDS2BdP99e/j6shyZvRNis/v4B6+Uvx4fhy+cAAAAASUVORK5CYII="
+                                        }
+                                        alt={book.volumeInfo.title}
+                                        style={{
+                                            width: "40px",
+                                            marginRight: "10px",
+                                        }}
+                                    />
+                                    <span>{book.volumeInfo.title}</span>
+                                </div>
+                            </ul>
+                        ))}
+                    </DivUl>
+                    {selectedBook2 && (
+                        <Msj>
+                            Seleccionaste: {selectedBook2.volumeInfo.title}
+                        </Msj>
+                    )}
+                </ColumnInput>
+            </DivInputs>
+
+            <ButtonGenerar onClick={handleSubmit} disabled={loading}>
+                {loading ? "Generando..." : "Generar Historia"}
+            </ButtonGenerar>
+
             {generatedStory && (
-                <div>
-                    <h3>Historia Generada</h3>
-                    <p>{generatedStory}</p>
-                </div>
+                <GeneratedStory>{generatedStory}</GeneratedStory>
             )}
-        </div>
+        </Conteiner>
     );
 };
+
+const Conteiner = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+`;
+
+const DivInputs = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+`;
+
+const ColumnInput = styled.div`
+    flex: 1;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const ContenedorBuscador = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const H3 = styled.h3`
+    font-size: 18px;
+    margin-bottom: 10px;
+`;
+
+const Input = styled.input`
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+`;
+
+const ButtonInput = styled.button`
+    padding: 7px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #0056b3;
+    }
+`;
+
+const DivUl = styled.div`
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+`;
+
+const Msj = styled.div`
+    margin-top: 10px;
+    font-size: 14px;
+    color: #074a27;
+    font-weight: bold;
+`;
+
+const ButtonGenerar = styled.button`
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #218838;
+    }
+    
+`;
+
+const GeneratedStory = styled.div`
+    width: 92%;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    white-space: pre-wrap;
+    text-align: justify;
+`;
 
 export default BookSearchForm;
