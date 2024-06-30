@@ -266,6 +266,11 @@ const DivInputs = styled.div`
     display: flex;
     width: 80%;
     justify-content: space-between;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+
 `;
 
 const ColumnInput = styled.div`
@@ -336,6 +341,11 @@ const DivButtons = styled.div`
     flex-direction: row;
     justify-content: space-around;
     width: 60%;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `;
 
 const ButtonGenerar = styled.button`
@@ -386,6 +396,12 @@ const Select = styled.select`
 const H2 = styled.h2`
     font-size: 15px;
     margin-bottom: 0px;
+
+    @media (max-width: 768px) {
+        font-size: 14px;
+        color: #074a27;
+        width: 80%;
+    }    
 `;
 
 const GeneratedStory = styled.div`
@@ -399,6 +415,12 @@ const GeneratedStory = styled.div`
     white-space: pre-wrap;
     text-align: justify;
     cursor: default;
+
+    @media (max-width: 768px) {
+        font-size: 14px;
+        width: 80%;
+        color: #074a27;
+    }
 `;
 
 export default BookSearchForm;
