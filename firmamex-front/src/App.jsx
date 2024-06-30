@@ -12,7 +12,7 @@ const App = () => {
 
     return (
         <ConteinerApp>
-                <Title>Generador de historias con libros</Title>
+                <Title>Generador de historias</Title>
             <BookSearchForm onSendBooks={handleSendBooks} />
             <div>
                 {books.book1 && books.book2 && (
@@ -36,7 +36,7 @@ const ConteinerApp = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
+    background-color: #d6d0c8;
 `;
 
 const Title = styled.h1`

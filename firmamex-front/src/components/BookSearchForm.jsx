@@ -11,11 +11,12 @@ const BookSearchForm = ({ onSendBooks }) => {
     const [selectedBook2, setSelectedBook2] = useState(null);
     const [generatedStory, setGeneratedStory] = useState("");
     const [loading, setLoading] = useState(false);
+    const [languages, setLanguages] = useState("español");
 
     const handleSearch1 = async () => {
         try {
             const response = await axios.get(
-                `http://localhost:3000/books?book=${query1}`
+                `https://proyect-books-k2u6.vercel.app/books?book=${query1}`
             );
             setResults1(response.data.items || []);
         } catch (error) {
@@ -26,7 +27,7 @@ const BookSearchForm = ({ onSendBooks }) => {
     const handleSearch2 = async () => {
         try {
             const response = await axios.get(
-                `http://localhost:3000/books?book=${query2}`
+                `https://proyect-books-k2u6.vercel.app/books?book=${query2}`
             );
             setResults2(response.data.items || []);
         } catch (error) {
@@ -42,28 +43,85 @@ const BookSearchForm = ({ onSendBooks }) => {
         setSelectedBook2(book);
     };
 
+     const handleSelectLanguages = (e) => {
+        setLanguages(e.target.value); 
+    };
     const handleSubmit = async () => {
         if (selectedBook1 && selectedBook2) {
             setLoading(true);
-            try {
-                const response = await axios.post(
-                    "http://localhost:3000/generate-story",
-                    {
-                        text1: selectedBook1.volumeInfo.description,
-                        text2: selectedBook2.volumeInfo.description,
+            const maxRetries = 4;
+            let attempts = 0;
+            let success = false;
+    
+            while (attempts < maxRetries && !success) {
+                try {
+                    const response = await axios.post(
+                        "https://proyect-books-k2u6.vercel.app/generate-story",
+                        {
+                            text1: selectedBook1.volumeInfo.title ?? selectedBook1.volumeInfo.description,
+                            text2: selectedBook2.volumeInfo.title ?? selectedBook2.volumeInfo.description,
+                        }
+                    );
+                    const storyText = response.data.generatedText;
+                    setGeneratedStory(storyText);
+                    success = true; // Si llegamos aquí, la historia se generó correctamente 
+                } catch (error) {
+                    attempts += 1;
+                    console.error(`Error generating story (Attempt ${attempts}):`, error);
+                    if (attempts < maxRetries) {
+                        // Esperar un tiempo antes de reintentar (e.g., 2 segundos)
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    } else {
+                        alert("Hubo un problema generando la historia. Por favor, intenta de nuevo más tarde.");
                     }
-                );
-                const storyText = response.data.generatedText;
-                setGeneratedStory(storyText);
-            } catch (error) {
-                console.error("Error generating story:", error);
-            } finally {
-                setLoading(false);
+                } finally {
+                    if (success) {
+                        setLoading(false);
+                    }
+                }
             }
         } else {
             alert("Por favor, selecciona dos libros.");
         }
     };
+
+    const handleTranslate = async () => {
+        if (generatedStory) {
+            setLoading(true);
+            const maxRetries = 4;
+            let attempts = 0;
+            let success = false;
+
+            while (attempts < maxRetries && !success) {
+                try {
+                    const response = await axios.post(
+                        "https://proyect-books-k2u6.vercel.app/translate-text",
+                        {
+                            text: generatedStory,
+                            languages,
+                        }
+                    );
+                    const translatedText = response.data.translatedText;
+                    setGeneratedStory(translatedText);
+                    success = true;
+                } catch (error) {
+                    attempts += 1;
+                    console.error(`Error translating story (Attempt ${attempts}):`, error);
+                    if (attempts < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    } else {
+                        alert("Hubo un problema traduciendo la historia. Por favor, intenta de nuevo más tarde.");
+                    }
+                } finally {
+                    if (success) {
+                        setLoading(false);
+                    }
+                }
+            }
+        }
+    }
+
+
 
     return (
         <Conteiner>
@@ -103,7 +161,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                                         }
                                         alt={book.volumeInfo.title}
                                         style={{
-                                            width: "40px",
+                                            width: "60px",
                                             marginRight: "10px",
                                         }}
                                     />
@@ -121,7 +179,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                 </ColumnInput>
 
                 <ColumnInput>
-                    {results1.length === 0 ? (
+                    {results2.length === 0 ? (
                         <H3>Buscar Libro 2</H3>
                     ) : (
                         <H3>Elija un Libro</H3>
@@ -155,7 +213,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                                         }
                                         alt={book.volumeInfo.title}
                                         style={{
-                                            width: "40px",
+                                            width: "60px",
                                             marginRight: "10px",
                                         }}
                                     />
@@ -171,11 +229,25 @@ const BookSearchForm = ({ onSendBooks }) => {
                     )}
                 </ColumnInput>
             </DivInputs>
-
             <ButtonGenerar onClick={handleSubmit} disabled={loading}>
                 {loading ? "Generando..." : "Generar Historia"}
             </ButtonGenerar>
-
+            {generatedStory && (
+                <>
+            <H2>Si te gusto la historia y quieres leerla en otro idioma, elije a cual y traducela</H2>
+            <DivButtons>
+            <Select value={languages} onChange={handleSelectLanguages}>
+                <option value="español">Español</option>
+                <option value="inglés">Inglés</option>
+                <option value="francés">Francés</option>
+                <option value="italiano">Italiano</option>
+            </Select>
+            <ButtonGenerar onClick={handleTranslate} disabled={loading}>
+                {loading ? "Generando..." : "Traducir Historia"}
+            </ButtonGenerar>
+            </DivButtons>
+            </>
+             )}
             {generatedStory && (
                 <GeneratedStory>{generatedStory}</GeneratedStory>
             )}
@@ -192,7 +264,7 @@ const Conteiner = styled.div`
 
 const DivInputs = styled.div`
     display: flex;
-    width: 100%;
+    width: 80%;
     justify-content: space-between;
 `;
 
@@ -225,21 +297,31 @@ const Input = styled.input`
 
 const ButtonInput = styled.button`
     padding: 7px 20px;
-    background-color: #007bff;
+    background: linear-gradient(90deg, #0158b4, #8f49da);
     color: white;
     border: none;
     border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: background 0.3s ease;
 
     &:hover {
-        background-color: #0056b3;
+        background: linear-gradient(90deg, #0056b3, #5500b3);
     }
 `;
 
 const DivUl = styled.div`
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
     margin-top: 10px;
+
+    ul {
+        cursor: pointer;
+    }
+
+    ul:hover {
+        background-color: #f1f1f1;
+    }
 `;
 
 const Msj = styled.div`
@@ -249,30 +331,74 @@ const Msj = styled.div`
     font-weight: bold;
 `;
 
+const DivButtons = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 60%;
+`;
+
 const ButtonGenerar = styled.button`
+    max-height: 40px;
     margin-top: 20px;
+    margin-bottom: 20px;
     padding: 10px 20px;
-    background-color: #28a745;
+    background: linear-gradient(45deg, #28a745, #17a2b8);
     color: white;
     border: none;
     border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: background 0.3s ease;
 
     &:hover {
-        background-color: #218838;
+        background: linear-gradient(45deg, #218838, #117a8b);
     }
+`;
+
+
+const Select = styled.select`
+    max-height: 40px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #28a745, #17a2b8);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+        background: linear-gradient(45deg, #359b4b, #117a8b);
+    }
+
+    option{
+        background: #347643;
+        color: white;
     
+    }
+
+`;
+
+const H2 = styled.h2`
+    font-size: 15px;
+    margin-bottom: 0px;
 `;
 
 const GeneratedStory = styled.div`
-    width: 92%;
+    width: 80%;
     margin-top: 20px;
+    margin-bottom: 20px;
     padding: 20px;
     background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     white-space: pre-wrap;
     text-align: justify;
+    cursor: default;
 `;
 
 export default BookSearchForm;
