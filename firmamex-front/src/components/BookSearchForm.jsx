@@ -290,6 +290,11 @@ const ContenedorBuscador = styled.div`
 const H3 = styled.h3`
     font-size: 18px;
     margin-bottom: 10px;
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+        color: #074a27;
+    }
 `;
 
 const Input = styled.input`
@@ -322,6 +327,13 @@ const DivUl = styled.div`
 
     ul {
         cursor: pointer;
+
+        span{
+            @media (max-width: 768px) {
+                color: #074a27;
+                font-size: 14px;
+            }
+        }
     }
 
     ul:hover {
