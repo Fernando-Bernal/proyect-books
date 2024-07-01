@@ -12,6 +12,7 @@ const BookSearchForm = ({ onSendBooks }) => {
     const [selectedBook2, setSelectedBook2] = useState(null);
     const [generatedStory, setGeneratedStory] = useState("");
     const [loading, setLoading] = useState(false);
+    const [loadingTranslate, setLoadingTranslate] = useState(false);
     const [languages, setLanguages] = useState("español");
     
     const handleSearch1 = async () => {
@@ -87,7 +88,7 @@ const BookSearchForm = ({ onSendBooks }) => {
 
     const handleTranslate = async () => {
         if (generatedStory) {
-            setLoading(true);
+            setLoadingTranslate(true);
             const maxRetries = 4;
             let attempts = 0;
             let success = false;
@@ -114,7 +115,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                     }
                 } finally {
                     if (success) {
-                        setLoading(false);
+                        setLoadingTranslate(false);
                     }
                 }
             }
@@ -241,7 +242,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                 <option value="italiano">Italiano</option>
             </Select>
             <ButtonGenerar onClick={handleTranslate} disabled={loading}>
-                {loading ? "Generando..." : "Traducir Historia"}
+                {loadingTranslate ? "Generando..." : "Traducir Historia"}
             </ButtonGenerar>
             </DivButtons>
             </>
