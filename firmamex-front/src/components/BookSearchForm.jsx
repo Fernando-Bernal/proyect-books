@@ -302,11 +302,12 @@ const Input = styled.input`
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-right: 10px;
+    background-color: white;
 `;
 
 const ButtonInput = styled.button`
     padding: 7px 20px;
-    background: linear-gradient(90deg, #0158b4, #8f49da);
+    background: linear-gradient(45deg, #28a745, #17a2b8);
     color: white;
     border: none;
     border-radius: 4px;
