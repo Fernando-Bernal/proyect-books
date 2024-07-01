@@ -408,11 +408,10 @@ const Select = styled.select`
 const H2 = styled.h2`
     font-size: 15px;
     margin-bottom: 0px;
-
+    color : #fff;
     @media (max-width: 768px) {
         font-size: 14px;
-        color: #074a27;
-        width: 80%;
+        width: 70%;
     }    
 `;
 
