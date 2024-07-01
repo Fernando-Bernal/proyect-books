@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
+const imageDefault = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAOVBMVEWoqa3///+kpamhoqb6+vrAwcP39/etrrLz8/Tq6uvU1NXb29zd3t/Nzc/w8PHHx8i0tbi7vMDk5OWv5McUAAADZUlEQVR4nO2b25KqMBBFTQeIiHLx/z/2iFOUjKL0bcc5VVkvvO5Kdzp943AoFAqFQqFQKBQKhUKh4ANRjJFm5s+31dygmKaha5twp+q7S52+LIwOw/UYnmjay+FruihO52dBC9f6O7JobN9Jmmmn/KrieP0k6UdWzKuJLtWeppvbn3IeFqWPlnvQj9lk0fRy497R1JlUxZoraeaSxbHiRaIphFMGVSQ6p/tZwS0o14RXRUmuKQTwHUy9RtQxITXFTqPp9hQCnV3jUD8MQAOqjDfTwySRMEKtgUWr2OhFBZAmy0GF0IG8ipkabIMJCzRZNIEuYHybkPNoEa5OjFzzIwD7Wa0HsR+drKLOAKfarV72aP016fKDNY2/U41WP7+lVf6izJqCf82szloeuF8/fSr1wL1gpqGI+o9FeTi6f/3nIMq/2eERp7w1HdJfjOh/8u0jc5ZwddfkkE8B6hkyezqi02gqRW9UkGrGaD9I58VaOYD6xKYKGdR3sb3JqOlDZPf0X6lQrSDLUQHHNOqojuvkGVIF5PBPG6s67ChEFRaQxrujeGyqhJ6DTOJkr8LP/OSvTZ1ltiY7qyHLFJJGgV9VuUbuNLLz9ZyTbW7C3h6yLgHUDBNWyNnVFnF/otWkvBsclE6cDY5uzLeGE8eOGxXOY57ToiSa2XY57l8chK9fBd/hoFGREjfYw4qcDaUNgKsl7A2lV2CRPWpMt9Bg3kDbCBmz8SLdUHrFv8oi5ULJGu+Bn4cmb1VkHGovXB1V2VuLC34tRmu77Jcqp8jgMVV74BMZyGFQu8alCkyGOL5F4zB4IFNTcYvefFSeTr5gvoLmZZItjG5F5jHRFo1JE8J4M2dLtJL3fZgYDBjdb97CUX1UHhP2d6iTK++wuUY7JvXLDbZQ+johNSlX9LAHpTwqpEfNVIqHGX1QqnwvouLmA7EoZIxaEMcq/zTqFfHIBpKyPFPLNKHSg98ItwJiDk0hiJzKvr3MQ9Ro9yrT92glotDRfEFSbuWynsh+2r+b5Ajun3UrSQBflOp/OR1sp8rx7i2wmzC5AsIMf3sww2O80HOzYsng2gzXqbJFqRlmrWwdLchgJsXWn65kMMNnhLR/3tEwReFLhjXMQJVVE/P6OazDS2BdP99e/j6shyZvRNis/v4B6+Uvx4fhy+cAAAAASUVORK5CYII="
 const BookSearchForm = ({ onSendBooks }) => {
     const [query1, setQuery1] = useState("");
     const [query2, setQuery2] = useState("");
@@ -12,7 +13,7 @@ const BookSearchForm = ({ onSendBooks }) => {
     const [generatedStory, setGeneratedStory] = useState("");
     const [loading, setLoading] = useState(false);
     const [languages, setLanguages] = useState("español");
-
+    
     const handleSearch1 = async () => {
         try {
             const response = await axios.get(
@@ -64,12 +65,11 @@ const BookSearchForm = ({ onSendBooks }) => {
                     );
                     const storyText = response.data.generatedText;
                     setGeneratedStory(storyText);
-                    success = true; // Si llegamos aquí, la historia se generó correctamente 
+                    success = true; 
                 } catch (error) {
                     attempts += 1;
                     console.error(`Error generating story (Attempt ${attempts}):`, error);
                     if (attempts < maxRetries) {
-                        // Esperar un tiempo antes de reintentar (e.g., 2 segundos)
                         await new Promise(resolve => setTimeout(resolve, 2000));
                     } else {
                         alert("Hubo un problema generando la historia. Por favor, intenta de nuevo más tarde.");
@@ -156,8 +156,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                                     <img
                                         src={
                                             book.volumeInfo.imageLinks
-                                                ?.thumbnail ||
-                                            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAOVBMVEWoqa3///+kpamhoqb6+vrAwcP39/etrrLz8/Tq6uvU1NXb29zd3t/Nzc/w8PHHx8i0tbi7vMDk5OWv5McUAAADZUlEQVR4nO2b25KqMBBFTQeIiHLx/z/2iFOUjKL0bcc5VVkvvO5Kdzp943AoFAqFQqFQKBQKhUKh4ANRjJFm5s+31dygmKaha5twp+q7S52+LIwOw/UYnmjay+FruihO52dBC9f6O7JobN9Jmmmn/KrieP0k6UdWzKuJLtWeppvbn3IeFqWPlnvQj9lk0fRy497R1JlUxZoraeaSxbHiRaIphFMGVSQ6p/tZwS0o14RXRUmuKQTwHUy9RtQxITXFTqPp9hQCnV3jUD8MQAOqjDfTwySRMEKtgUWr2OhFBZAmy0GF0IG8ipkabIMJCzRZNIEuYHybkPNoEa5OjFzzIwD7Wa0HsR+drKLOAKfarV72aP016fKDNY2/U41WP7+lVf6izJqCf82szloeuF8/fSr1wL1gpqGI+o9FeTi6f/3nIMq/2eERp7w1HdJfjOh/8u0jc5ZwddfkkE8B6hkyezqi02gqRW9UkGrGaD9I58VaOYD6xKYKGdR3sb3JqOlDZPf0X6lQrSDLUQHHNOqojuvkGVIF5PBPG6s67ChEFRaQxrujeGyqhJ6DTOJkr8LP/OSvTZ1ltiY7qyHLFJJGgV9VuUbuNLLz9ZyTbW7C3h6yLgHUDBNWyNnVFnF/otWkvBsclE6cDY5uzLeGE8eOGxXOY57ToiSa2XY57l8chK9fBd/hoFGREjfYw4qcDaUNgKsl7A2lV2CRPWpMt9Bg3kDbCBmz8SLdUHrFv8oi5ULJGu+Bn4cmb1VkHGovXB1V2VuLC34tRmu77Jcqp8jgMVV74BMZyGFQu8alCkyGOL5F4zB4IFNTcYvefFSeTr5gvoLmZZItjG5F5jHRFo1JE8J4M2dLtJL3fZgYDBjdb97CUX1UHhP2d6iTK++wuUY7JvXLDbZQ+johNSlX9LAHpTwqpEfNVIqHGX1QqnwvouLmA7EoZIxaEMcq/zTqFfHIBpKyPFPLNKHSg98ItwJiDk0hiJzKvr3MQ9Ro9yrT92glotDRfEFSbuWynsh+2r+b5Ajun3UrSQBflOp/OR1sp8rx7i2wmzC5AsIMf3sww2O80HOzYsng2gzXqbJFqRlmrWwdLchgJsXWn65kMMNnhLR/3tEwReFLhjXMQJVVE/P6OazDS2BdP99e/j6shyZvRNis/v4B6+Uvx4fhy+cAAAAASUVORK5CYII="
+                                                ?.thumbnail || imageDefault
                                         }
                                         alt={book.volumeInfo.title}
                                         style={{
@@ -208,8 +207,7 @@ const BookSearchForm = ({ onSendBooks }) => {
                                     <img
                                         src={
                                             book.volumeInfo.imageLinks
-                                                ?.thumbnail ||
-                                            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAOVBMVEWoqa3///+kpamhoqb6+vrAwcP39/etrrLz8/Tq6uvU1NXb29zd3t/Nzc/w8PHHx8i0tbi7vMDk5OWv5McUAAADZUlEQVR4nO2b25KqMBBFTQeIiHLx/z/2iFOUjKL0bcc5VVkvvO5Kdzp943AoFAqFQqFQKBQKhUKh4ANRjJFm5s+31dygmKaha5twp+q7S52+LIwOw/UYnmjay+FruihO52dBC9f6O7JobN9Jmmmn/KrieP0k6UdWzKuJLtWeppvbn3IeFqWPlnvQj9lk0fRy497R1JlUxZoraeaSxbHiRaIphFMGVSQ6p/tZwS0o14RXRUmuKQTwHUy9RtQxITXFTqPp9hQCnV3jUD8MQAOqjDfTwySRMEKtgUWr2OhFBZAmy0GF0IG8ipkabIMJCzRZNIEuYHybkPNoEa5OjFzzIwD7Wa0HsR+drKLOAKfarV72aP016fKDNY2/U41WP7+lVf6izJqCf82szloeuF8/fSr1wL1gpqGI+o9FeTi6f/3nIMq/2eERp7w1HdJfjOh/8u0jc5ZwddfkkE8B6hkyezqi02gqRW9UkGrGaD9I58VaOYD6xKYKGdR3sb3JqOlDZPf0X6lQrSDLUQHHNOqojuvkGVIF5PBPG6s67ChEFRaQxrujeGyqhJ6DTOJkr8LP/OSvTZ1ltiY7qyHLFJJGgV9VuUbuNLLz9ZyTbW7C3h6yLgHUDBNWyNnVFnF/otWkvBsclE6cDY5uzLeGE8eOGxXOY57ToiSa2XY57l8chK9fBd/hoFGREjfYw4qcDaUNgKsl7A2lV2CRPWpMt9Bg3kDbCBmz8SLdUHrFv8oi5ULJGu+Bn4cmb1VkHGovXB1V2VuLC34tRmu77Jcqp8jgMVV74BMZyGFQu8alCkyGOL5F4zB4IFNTcYvefFSeTr5gvoLmZZItjG5F5jHRFo1JE8J4M2dLtJL3fZgYDBjdb97CUX1UHhP2d6iTK++wuUY7JvXLDbZQ+johNSlX9LAHpTwqpEfNVIqHGX1QqnwvouLmA7EoZIxaEMcq/zTqFfHIBpKyPFPLNKHSg98ItwJiDk0hiJzKvr3MQ9Ro9yrT92glotDRfEFSbuWynsh+2r+b5Ajun3UrSQBflOp/OR1sp8rx7i2wmzC5AsIMf3sww2O80HOzYsng2gzXqbJFqRlmrWwdLchgJsXWn65kMMNnhLR/3tEwReFLhjXMQJVVE/P6OazDS2BdP99e/j6shyZvRNis/v4B6+Uvx4fhy+cAAAAASUVORK5CYII="
+                                                ?.thumbnail || imageDefault
                                         }
                                         alt={book.volumeInfo.title}
                                         style={{
@@ -277,7 +275,7 @@ const ColumnInput = styled.div`
     flex: 1;
     margin: 10px;
     padding: 10px;
-    background-color: #f9f9f9;
+    background-color: #d5d5d5;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;

@@ -7,23 +7,13 @@ const App = () => {
 
     const handleSendBooks = (book1, book2) => {
         setBooks({ book1, book2 });
-        // Aquí puedes manejar el envío a la API de generación de historias
+        
     };
 
     return (
         <ConteinerApp>
                 <Title>Generador de historias</Title>
             <BookSearchForm onSendBooks={handleSendBooks} />
-            <div>
-                {books.book1 && books.book2 && (
-                    <div>
-                        <h2>Libros Seleccionados</h2>
-                        <p>{books.book1.volumeInfo.title}</p>
-                        <p>{books.book2.volumeInfo.title}</p>
-                        {/* Aquí puedes agregar el botón para generar la historia */}
-                    </div>
-                )}
-            </div>
         </ConteinerApp>
     );
 };

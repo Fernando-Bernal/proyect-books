@@ -33,6 +33,7 @@ const traslateText = async (req, res) => {
   const { text, languages  } = req.body;
   try {
       let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.APIKEY_GEMINI}`;
+      
       const response = await axios.post(url, {
           contents: [{parts: [{text: `Realiza la traduccion la siguiente historia ${text} al idioma ${languages} y enviame la traduccion, sin ninguna aclaracion`,},],},],
       },
