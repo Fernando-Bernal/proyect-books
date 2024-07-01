@@ -36,14 +36,13 @@ const ConteinerApp = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #d6d0c8;
-`;
+    `;
 
 const Title = styled.h1`
     text-align: center;
     margin: 0 auto;
     font-size: 2.5rem;
-
+    color: #ffffff;
     @media (max-width: 768px) {
         font-size: 2rem;
     }
