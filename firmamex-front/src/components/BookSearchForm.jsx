@@ -303,6 +303,7 @@ const Input = styled.input`
     border-radius: 4px;
     margin-right: 10px;
     background-color: white;
+    color: black;
 `;
 
 const ButtonInput = styled.button`
