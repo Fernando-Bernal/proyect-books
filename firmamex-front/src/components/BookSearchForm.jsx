@@ -317,7 +317,7 @@ const ButtonInput = styled.button`
     transition: background 0.3s ease;
 
     &:hover {
-        background: linear-gradient(90deg, #0056b3, #5500b3);
+        background: linear-gradient(45deg, #218838, #117a8b);
     }
 `;
 
